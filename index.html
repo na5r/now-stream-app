@@ -5,20 +5,23 @@
     <title>KaiStreams</title>
     <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #efa11b; --bg: #111317; }
+        :root { --accent: #efa11b; --bg: #111317; --card: #1c1f26; }
         body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; transition: 0.8s; }
         #logo { font-family: 'Luckiest Guy', cursive; position: absolute; top: 20px; left: 20px; font-size: 2.5rem; color: var(--accent); }
         .master-btn { position: absolute; top: 20px; right: 20px; color: #333; cursor: pointer; }
         
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); opacity:0; transition: 0.3s; justify-content:center; align-items:center; z-index:1000; }
+        /* UNIFIED MODAL STYLING */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: 0.3s; }
         .modal.show { display: flex; opacity: 1; }
-        .modal-content { background: #1c1f26; padding: 30px; border-radius: 16px; transform: scale(0.9); transition: 0.3s; width: 320px; text-align: center; border: 1px solid #333; }
+        .modal-content { background: var(--card); padding: 40px; border-radius: 20px; width: 350px; text-align: center; border: 1px solid #333; transform: scale(0.9); transition: 0.3s; }
         .modal.show .modal-content { transform: scale(1); }
 
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .action-btn { background: #2a303c; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
-        .back-btn { background: #444; margin-top: 15px; width: 100%; padding: 10px; border-radius: 8px; border: none; color: white; cursor: pointer; }
-        .input-field { width: 100%; padding: 15px; margin-bottom: 10px; background: #0f1217; border: 1px solid #444; color: white; text-align: center; font-size: 1.5rem; border-radius: 8px; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+        .action-btn { background: #2a303c; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-size: 1.2rem; transition: 0.2s; }
+        .action-btn:hover { background: #3d4659; }
+        .back-btn { background: #444; margin-top: 15px; width: 100%; padding: 12px; border-radius: 10px; border: none; color: white; cursor: pointer; }
+        .input-field { width: 100%; padding: 15px; margin: 10px 0; background: #0f1217; border: 1px solid #444; color: white; text-align: center; font-size: 1.5rem; border-radius: 10px; }
+        h3 { margin-top: 0; font-size: 1.5rem; color: var(--accent); }
     </style>
 </head>
 <body>
@@ -32,14 +35,15 @@
     </div>
 
     <div class="modal" id="pinModal"><div class="modal-content"><h3>Enter PIN</h3><input type="password" id="pinDisplay" readonly class="input-field"><div id="keypad" class="keypad"></div><button class="back-btn" onclick="closeModal('pinModal')">Back</button></div></div>
-    <div class="modal" id="masterModal"><div class="modal-content"><h3>Admin (Delete)</h3><input type="password" id="adminDisplay" readonly class="input-field"><div id="adminKeypad" class="keypad"></div><button class="back-btn" onclick="closeModal('masterModal')">Back</button></div></div>
-    <div class="modal" id="addModal"><div class="modal-content"><h3>New Profile</h3><input type="text" id="newName" class="input-field" placeholder="Name"><input type="password" id="newPin" class="input-field" placeholder="4-Digit PIN"><button class="action-btn" onclick="saveProfile()">Save</button><button class="back-btn" onclick="closeModal('addModal')">Cancel</button></div></div>
+    <div class="modal" id="masterModal"><div class="modal-content"><h3>Admin Code</h3><input type="password" id="adminDisplay" readonly class="input-field"><div id="adminKeypad" class="keypad"></div><button class="back-btn" onclick="closeModal('masterModal')">Back</button></div></div>
+    <div class="modal" id="addModal"><div class="modal-content"><h3>Add Profile</h3><input type="text" id="newName" class="input-field" placeholder="Name"><input type="password" id="newPin" class="input-field" placeholder="4-Digit PIN"><button class="action-btn" style="width:100%; background:var(--accent);" onclick="saveProfile()">Save Profile</button><button class="back-btn" onclick="closeModal('addModal')">Cancel</button></div></div>
 
     <script>
         const clickSfx = new Audio('click.mp3'); const successSfx = new Audio('success.mp3');
         let profiles = JSON.parse(localStorage.getItem('stream_profiles')) || [{name:"User", pin:"0605", avatar:"https://api.dicebear.com/7.x/bottts/svg?seed=User"}];
-        
-        function playClick() { clickSfx.currentTime = 0; clickSfx.play(); }
+        let activeIdx = 0;
+
+        function playClick() { clickSfx.currentTime = 0; clickSfx.play().catch(()=>{}); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
         function saveProfile() {
@@ -62,14 +66,10 @@
         function verifyPin() {
             if(document.getElementById('pinDisplay').value === profiles[activeIdx].pin) {
                 successSfx.play(); document.body.style.opacity = "0";
-                setTimeout(() => {
-                    document.body.innerHTML = `<div style="padding:50px;"><h1>Home Screen</h1><input type="search" placeholder="Search KaiStreams..." style="padding:20px; width:100%; border-radius:10px;"></div>`;
-                    document.body.style.opacity = "1";
-                }, 800);
-            }
+                setTimeout(() => { document.body.innerHTML = "<h1 style='text-align:center; margin-top:200px;'>Home Screen</h1>"; document.body.style.opacity = "1"; }, 800);
+            } else { alert("Wrong PIN"); document.getElementById('pinDisplay').value = ""; }
         }
 
-        let activeIdx = 0;
         document.getElementById('profileGrid').innerHTML = profiles.map((p, i) => `
             <div style="text-align:center; cursor:pointer;" onclick="activeIdx=${i}; document.getElementById('pinModal').classList.add('show')">
                 <img src="${p.avatar}" style="width:140px; border-radius:50%; border: 4px solid #333;">
