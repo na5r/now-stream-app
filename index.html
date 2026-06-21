@@ -2,45 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>KaiStreams Login</title>
+    <title>KaiStreams</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #efa11b; --bg: #0f1014; --sidebar: #15171c; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; }
+        .hidden { display: none !important; }
+        
+        /* Login Screen */
+        #loginContainer { height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .box { background: #1c1f26; padding: 40px; border-radius: 20px; width: 350px; text-align: center; }
+        .input-field { width: 100%; height: 50px; margin-bottom: 15px; background: #0f1217; border: 1px solid #444; color: white; border-radius: 8px; padding: 10px; box-sizing: border-box; }
+        .main-btn { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 8px; cursor: pointer; color: black; font-weight: bold; }
+
+        /* Dashboard */
+        .app-container { display: flex; height: 100vh; }
+        .sidebar { width: 250px; background: var(--sidebar); padding: 40px; }
+        .main-view { flex: 1; padding: 40px; overflow-y: auto; }
+        .nav-btn { display: block; background: none; border: none; color: white; margin-bottom: 20px; cursor: pointer; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div id="loginContainer">
+        <div class="box">
+            <h1>KaiStreams</h1>
+            <input type="email" id="email" class="input-field" placeholder="Email">
+            <input type="password" id="pass" class="input-field" placeholder="Password">
+            <button class="main-btn" onclick="handleLogin()">Sign In</button>
+        </div>
+    </div>
+
+    <div id="dashboard" class="hidden app-container">
+        <div class="sidebar">
+            <h1 style="color:var(--accent); font-family:'Luckiest Guy'">KaiStreams</h1>
+            <button class="nav-btn" onclick="renderView('dashboard')">Browse</button>
+            <button class="nav-btn" onclick="renderView('comingSoon')">Coming Soon</button>
+        </div>
+        <div id="mainView" class="main-view"></div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-        // PASTE YOUR CONFIG FROM FIREBASE SETTINGS HERE
+        // PASTE YOUR CONFIG HERE
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            databaseURL: "YOUR_DATABASE_URL",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyAdSeTJht66G67mMQq5oRyW0YVVffoQKWM",
+  authDomain: "kaistreams.firebaseapp.com",
+  databaseURL: "https://kaistreams-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kaistreams",
+  storageBucket: "kaistreams.firebasestorage.app",
+  messagingSenderId: "232696634492",
+  appId: "1:232696634492:web:de0122ecc33ebe71237df9",
+  measurementId: "G-FXLJM4LCXC"
         };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+
+        // Keep user logged in across sessions
+        setPersistence(auth, browserLocalPersistence);
+
+        // Check if user is already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) showDashboard();
+        });
 
         window.handleLogin = async () => {
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
-                alert("Login Successful! Loading Dashboard...");
-                // Here you would trigger the function that shows your dashboard
-            } catch (error) {
-                alert("Access Denied: " + error.message);
-            }
+                showDashboard();
+            } catch (e) { alert("Invalid Credentials"); }
         };
+
+        function showDashboard() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            renderView('dashboard');
+        }
+
+        window.renderView = (view) => {
+            const mv = document.getElementById('mainView');
+            mv.innerHTML = view === 'dashboard' ? '<h1>Recommended</h1>' : '<h1>Coming Soon</h1>';
+        }
     </script>
-</head>
-<body style="background:#0f1014; color:white; display:flex; justify-content:center; align-items:center; height:100vh;">
-
-    <div id="loginBox" style="background:#1c1f26; padding:40px; border-radius:20px; text-align:center;">
-        <h1>KaiStreams Login</h1>
-        <input type="email" id="email" placeholder="Email" style="width:100%; padding:15px; margin:10px 0; background:#0f1217; border:none; color:white; border-radius:8px;">
-        <input type="password" id="pass" placeholder="Password" style="width:100%; padding:15px; margin:10px 0; background:#0f1217; border:none; color:white; border-radius:8px;">
-        <button onclick="handleLogin()" style="width:100%; padding:15px; background:#efa11b; border:none; border-radius:8px; cursor:pointer;">Sign In</button>
-    </div>
-
 </body>
 </html>
