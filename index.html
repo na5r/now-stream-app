@@ -11,7 +11,7 @@
         .box { background: #1c1f26; padding: 40px; border-radius: 20px; width: 350px; text-align: center; }
         .input-field { width: 100%; height: 50px; margin-bottom: 15px; background: #0f1217; border: 1px solid #444; color: white; border-radius: 8px; padding: 10px; box-sizing: border-box; }
         .main-btn { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 8px; cursor: pointer; color: black; font-weight: bold; }
-        .profile-btn { margin: 10px; padding: 20px; background: #2c313c; border: none; color: white; cursor: pointer; border-radius: 10px; }
+        .profile-btn { margin: 10px; padding: 20px; background: #2c313c; border: none; color: white; cursor: pointer; border-radius: 10px; font-size: 1.2rem; }
     </style>
 </head>
 <body>
@@ -33,7 +33,7 @@
         <div id="profileGrid"></div>
     </div>
 
-    <div id="dashboard" class="screen hidden">
+    <div id="dashboard" class="hidden">
         <h1>Dashboard</h1>
         <div id="mainView"></div>
         <button onclick="auth.signOut(); location.reload();">Log Out</button>
@@ -57,43 +57,33 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const playSfx = (id) => {
-            const sfx = document.getElementById(id);
-            sfx.currentTime = 0;
-            sfx.play().catch(() => {});
-        };
-
-        // Click sound for inputs
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('input', () => playSfx('clickSfx'));
-        });
-
         window.handleLogin = async () => {
-            playSfx('clickSfx');
             try {
                 await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value);
-                playSfx('successSfx');
-            } catch (e) { alert("Invalid Credentials"); }
+            } catch (e) { alert("Login Error: " + e.message); }
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('loginScreen').classList.add('hidden');
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    const profiles = userDoc.data().profiles;
-                    const grid = document.getElementById('profileGrid');
-                    grid.innerHTML = '';
-                    profiles.forEach(p => {
-                        grid.innerHTML += `<button class="profile-btn" onclick="selectProfile('${p.name}')">${p.name}</button>`;
-                    });
-                    document.getElementById('profileScreen').classList.remove('hidden');
-                }
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const profiles = userDoc.data().profiles;
+                        const grid = document.getElementById('profileGrid');
+                        grid.innerHTML = '';
+                        profiles.forEach(p => {
+                            grid.innerHTML += `<button class="profile-btn" onclick="selectProfile('${p.name}')">${p.name}</button>`;
+                        });
+                        document.getElementById('profileScreen').classList.remove('hidden');
+                    } else {
+                        alert("No profile data found for this user!");
+                    }
+                } catch (e) { console.error("Database error:", e); }
             }
         });
 
         window.selectProfile = (name) => {
-            playSfx('clickSfx');
             document.getElementById('profileScreen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
         };
