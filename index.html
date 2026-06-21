@@ -28,18 +28,18 @@
     <div id="profileGrid" style="display:flex; justify-content:center; align-items:center; height:100vh; gap:40px;"></div>
 
     <div class="modal" id="pinModal"><div class="modal-content"><h3>Enter PIN</h3><input type="password" id="pinDisplay" readonly class="input-field"><div id="keypad" class="keypad"></div><button class="back-btn" onclick="closeModal('pinModal')">Back</button></div></div>
-
     <div class="modal" id="masterModal"><div class="modal-content"><h3>Admin Code</h3><input type="password" id="adminDisplay" readonly class="input-field"><div id="adminKeypad" class="keypad"></div><button class="back-btn" onclick="closeModal('masterModal')">Back</button></div></div>
 
     <script>
-        const clickSfx = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-typewriter-soft-click-1125.mp3');
-        const successSfx = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3');
+        // REPLACE 'click.mp3' and 'success.mp3' with your actual file names
+        const clickSfx = new Audio('click.mp3'); 
+        const successSfx = new Audio('success.mp3'); 
+
         let profiles = JSON.parse(localStorage.getItem('stream_profiles')) || [{name:"User", pin:"0605", avatar:"https://api.dicebear.com/7.x/bottts/svg?seed=User"}];
         
-        function playClick() { clickSfx.currentTime = 0; clickSfx.play(); }
+        function playClick() { clickSfx.currentTime = 0; clickSfx.play().catch(e => console.log("Waiting for user interaction")); }
         function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 
-        // Build Keypads
         function buildKeypad(containerId, inputId, callback) {
             const container = document.getElementById(containerId);
             [1,2,3,4,5,6,7,8,9,0].forEach(n => container.innerHTML += `<button class="action-btn" onclick="playClick(); document.getElementById('${inputId}').value+='${n}'">${n}</button>`);
@@ -54,13 +54,6 @@
                 successSfx.play();
                 document.body.style.opacity = "0";
                 setTimeout(() => document.body.innerHTML = "<h1 style='text-align:center; margin-top:200px;'>Home Screen Active</h1>", 800);
-            }
-        }
-
-        function verifyAdmin() {
-            if(document.getElementById('adminDisplay').value === "0605") {
-                alert("Admin Access Granted");
-                closeModal('masterModal');
             }
         }
 
