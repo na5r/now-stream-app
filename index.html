@@ -3,76 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOW Stream Premium</title>
+    <title>KaiStreams</title>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
     <style>
-        body { background: #111317; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; }
-        .modal-content { background: #1c1f26; padding: 30px; border-radius: 12px; width: 350px; text-align: center; }
-        .action-btn { background: #222731; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; width: 100%; margin-top: 10px; }
-        .input-field { width: 100%; padding: 10px; margin: 10px 0; background: #222731; border: 1px solid #444; color: white; border-radius: 4px; text-align: center; font-size: 1.5rem; }
-        .master-corner { position: absolute; top: 10px; right: 10px; color: #555; cursor: pointer; font-size: 0.8rem; }
+        :root { --accent: #efa11b; }
+        body { background: #111317; color: #fff; font-family: sans-serif; transition: 0.8s ease-in-out; margin: 0; min-height: 100vh; }
+        #logo { font-family: 'Luckiest Guy', cursive; position: absolute; top: 20px; left: 20px; font-size: 2.5rem; color: var(--accent); pointer-events: none; }
+        
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.9); opacity:0; transition: 0.3s; justify-content:center; align-items:center; }
+        .modal.show { display: flex; opacity: 1; }
+        .modal-content { background: #1c1f26; padding: 30px; border-radius: 12px; transform: scale(0.9); transition: 0.3s; width: 350px; text-align: center; }
+        .modal.show .modal-content { transform: scale(1); }
+
+        .profile-card { text-align: center; cursor: pointer; transition: 0.3s; padding: 20px; border-radius: 20px; }
+        .profile-card:hover { background: linear-gradient(135deg, #2a2a2a, #1c1f26); transform: scale(1.1); }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid transparent; transition: 0.3s; }
+        .profile-card:hover .profile-avatar { border-color: var(--accent); }
+        
+        .input-field { width: 100%; padding: 15px; margin: 10px 0; background: #222731; border: 1px solid #444; color: white; border-radius: 4px; text-align: center; font-size: 1.5rem; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+        .action-btn { background: #222731; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; width: 100%; }
     </style>
 </head>
 <body>
 
-    <div class="master-corner" onclick="document.getElementById('masterModal').style.display='flex'">Master Controls</div>
-    <div id="profileGrid" style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center;"></div>
-    <button class="action-btn" style="width:200px; margin-top:50px;" onclick="document.getElementById('creatorModal').style.display='flex'">+ Add Profile</button>
+    <div id="logo">KaiStreams</div>
+    <div id="profileGrid" style="display:flex; justify-content:center; align-items:center; height:100vh; gap:40px;"></div>
 
-    <div class="modal" id="creatorModal"><div class="modal-content"><h3>Create Profile</h3><input type="text" id="newProfileName" class="input-field" placeholder="Name"><input type="password" id="newProfilePin" class="input-field" placeholder="PIN (Optional)"> <button class="action-btn" onclick="saveNewProfile()">Save</button></div></div>
-    <div class="modal" id="pinModal"><div class="modal-content"><h3>Enter PIN</h3><input type="password" id="pinDisplay" readonly class="input-field"><div id="keypad" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:20px;"></div></div></div>
-    <div class="modal" id="masterModal"><div class="modal-content"><h3>Master Admin</h3><input type="password" id="masterPass" class="input-field" placeholder="Code"> <button class="action-btn" onclick="verifyMaster()">Unlock Delete</button></div></div>
+    <div class="modal" id="pinModal"><div class="modal-content"><h3>Enter PIN</h3><input type="password" id="pinDisplay" readonly class="input-field"><div id="keypad" class="keypad"></div></div></div>
 
     <script>
-        let profiles = JSON.parse(localStorage.getItem('stream_profiles')) || [];
-        let activeIdx = null; let adminMode = false;
-
-        function saveNewProfile() {
-            const name = document.getElementById('newProfileName').value;
-            const pin = document.getElementById('newProfilePin').value;
-            if(!name) return;
-            profiles.push({ name, pin: pin || null, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + name });
-            localStorage.setItem('stream_profiles', JSON.stringify(profiles));
-            location.reload();
-        }
-
-        function verifyMaster() {
-            if(document.getElementById('masterPass').value === "0605") {
-                adminMode = true;
-                document.getElementById('masterModal').style.display = 'none';
-                render();
-            } else { alert("Wrong Code"); }
-        }
+        let profiles = JSON.parse(localStorage.getItem('stream_profiles')) || [{name:"User", pin:"0605", avatar:"https://api.dicebear.com/7.x/bottts/svg?seed=User"}];
+        let activeIdx = null;
+        const successSound = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3');
 
         function render() {
-            const grid = document.getElementById('profileGrid');
-            grid.innerHTML = profiles.map((p, i) => `
-                <div style="text-align:center;">
-                    <div onclick="checkPin(${i})" style="cursor:pointer;">
-                        <img src="${p.avatar}" style="width:120px; border-radius:50%;">
-                        <p>${p.name}</p>
-                    </div>
-                    ${adminMode ? `<button onclick="deleteProfile(${i})" style="color:red; background:none; border:none; cursor:pointer;">Delete</button>` : ''}
+            document.getElementById('profileGrid').innerHTML = profiles.map((p, i) => `
+                <div class="profile-card" onclick="activeIdx=${i}; document.getElementById('pinModal').classList.add('show')">
+                    <img class="profile-avatar" src="${p.avatar}">
+                    <p style="margin-top:15px; font-size:1.2rem;">${p.name}</p>
                 </div>
             `).join('');
         }
 
-        // Keypad Logic
         const kp = document.getElementById('keypad');
-        for(let i=1; i<=9; i++) kp.innerHTML += `<button class="action-btn" onclick="pinInput('${i}')">${i}</button>`;
-        kp.innerHTML += `<button class="action-btn" onclick="pinInput('0')">0</button><button class="action-btn" style="background:#ff4a4a;" onclick="document.getElementById('pinDisplay').value=''">C</button><button class="action-btn" style="background:#00b2bd;" onclick="verifyPin()">OK</button>`;
+        for(let i=1; i<=9; i++) kp.innerHTML += `<button class="action-btn" onclick="addPin('${i}')">${i}</button>`;
+        kp.innerHTML += `<button class="action-btn" onclick="addPin('0')">0</button><button class="action-btn" style="background:#ff4a4a;" onclick="document.getElementById('pinDisplay').value=''">C</button><button class="action-btn" style="background:#00b2bd;" onclick="verify()">OK</button>`;
 
-        function pinInput(n) { document.getElementById('pinDisplay').value += n; }
-        function checkPin(i) {
-            activeIdx = i;
-            if(profiles[i].pin) { document.getElementById('pinModal').style.display = 'flex'; }
-            else { alert("Welcome " + profiles[i].name); }
+        function addPin(n) { let d = document.getElementById('pinDisplay'); if(d.value.length < 4) d.value += n; }
+        
+        function verify() {
+            if(document.getElementById('pinDisplay').value === profiles[activeIdx].pin) {
+                successSound.play();
+                document.body.style.transform = "scale(1.5)";
+                document.body.style.opacity = "0";
+                setTimeout(() => {
+                    document.body.innerHTML = `<div style="padding:50px; font-family:sans-serif;"><h1>Search KaiStreams</h1><input type="text" placeholder="Search..." style="padding:20px; width:100%; max-width:500px;"></div>`;
+                    document.body.style.transform = "scale(1)";
+                    document.body.style.opacity = "1";
+                }, 800);
+            } else { alert("Wrong PIN"); document.getElementById('pinDisplay').value = ""; }
         }
-        function verifyPin() {
-            if(document.getElementById('pinDisplay').value === profiles[activeIdx].pin) { alert("Unlocked!"); location.reload(); }
-            else { alert("Wrong PIN"); document.getElementById('pinDisplay').value = ""; }
-        }
-
         render();
     </script>
 </body>
