@@ -32,12 +32,12 @@
 
     <div id="dashboard" class="hidden" style="text-align: center;">
         <h1>Dashboard</h1>
-        <button class="logout-btn" onclick="auth.signOut(); location.reload();">Log Out</button>
+        <button class="logout-btn" onclick="performLogout()">Log Out</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -53,32 +53,27 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Expose functions to the window so the HTML can see them
         window.handleLogin = async () => {
             try {
                 await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value);
-            } catch (e) { alert("Login Error"); }
+            } catch (e) { alert("Login Error: " + e.message); }
+        };
+
+        window.performLogout = () => {
+            signOut(auth).then(() => {
+                location.reload();
+            });
         };
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('loginScreen').classList.add('hidden');
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    const profiles = userDoc.data().profiles;
-                    const grid = document.getElementById('profileGrid');
-                    grid.innerHTML = '';
-                    profiles.forEach(p => {
-                        grid.innerHTML += `<button class="profile-btn" onclick="selectProfile()">${p.name}</button>`;
-                    });
-                    document.getElementById('profileScreen').classList.remove('hidden');
-                }
-            }
-        });
-
-        window.selectProfile = () => {
-            document.getElementById('profileScreen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-        };
-    </script>
-</body>
-</html>
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const profiles = userDoc.data().profiles;
+                        const grid = document.getElementById('profileGrid');
+                        grid.innerHTML = '';
+                        profiles.forEach(p => {
+                            grid.innerHTML += `<button class="profile-btn" onclick="selectProfile
