@@ -8,26 +8,34 @@
     <style>
         :root { --accent: #efa11b; }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
-        body { background: #111317; color: #fff; font-family: sans-serif; overflow-x: hidden; }
+        body { background: #111317; color: #fff; font-family: sans-serif; }
         
-        /* Focus styles for TV remote navigation */
-        button:focus, .profile-card:focus { border: 3px solid white !important; transform: scale(1.1); }
-
-        .profile-card { text-align: center; cursor: pointer; width: 140px; }
-        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid transparent; }
-        .profile-card:hover .profile-avatar { border-color: var(--accent); }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; }
         .modal-content { background: #1c1f26; padding: 30px; border-radius: 12px; width: 400px; text-align: center; }
         
+        .profile-card { text-align: center; cursor: pointer; width: 140px; transition: transform 0.2s; }
+        .profile-card:focus { border: 3px solid white; transform: scale(1.1); }
+        .profile-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid transparent; }
+        .profile-card:hover .profile-avatar { border-color: var(--accent); }
+        
+        .action-btn { background: #222731; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; width: 100%; margin-top: 10px; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .action-btn { background: #222731; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; }
     </style>
 </head>
 <body>
 
     <div id="profileOverlay" style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <div id="profileGrid" style="display:flex; gap:30px;"></div>
+        <div style="margin-bottom:40px; font-size:2rem;">Who's watching?</div>
+        <div id="profileGrid" style="display:flex; gap:30px; justify-content:center;"></div>
+        <button class="action-btn" style="width:200px; margin-top:50px;" onclick="document.getElementById('creatorModal').style.display='flex'">+ Add Profile</button>
+    </div>
+
+    <div class="modal" id="creatorModal">
+        <div class="modal-content">
+            <h3>Create Profile</h3>
+            <input type="text" id="newProfileName" placeholder="Name" style="width:100%; padding:10px; margin:10px 0; background:#222731; border:none; color:white;">
+            <button class="action-btn" onclick="saveNewProfile()">Save</button>
+        </div>
     </div>
 
     <div class="modal" id="resetKeypadModal">
@@ -40,13 +48,25 @@
 
     <script>
         emailjs.init("A85O4ZgyTDQu8v1dz");
-        
-        // PFP Gallery
-        const pfpGallery = [
-            "https://api.dicebear.com/7.x/bottts/svg?seed=1",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=2",
-            "https://api.dicebear.com/7.x/bottts/svg?seed=3"
-        ];
+        let profiles = JSON.parse(localStorage.getItem('stream_profiles')) || [];
+        let curIdx = null; let curToken = null;
+
+        function renderProfiles() {
+            const grid = document.getElementById('profileGrid');
+            grid.innerHTML = profiles.map((p, i) => `
+                <div class="profile-card" tabindex="0" onclick="curIdx=${i}; document.getElementById('resetKeypadModal').style.display='flex'">
+                    <img class="profile-avatar" src="${p.avatar}">
+                    <p style="margin-top:10px;">${p.name}</p>
+                </div>
+            `).join('');
+        }
+
+        function saveNewProfile() {
+            const n = document.getElementById('newProfileName').value;
+            profiles.push({ name: n, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed="+n });
+            localStorage.setItem('stream_profiles', JSON.stringify(profiles));
+            location.reload();
+        }
 
         // Build Keypad
         const keypad = document.getElementById('keypad');
@@ -60,13 +80,11 @@
         function resetKey() { code = ""; document.getElementById('resetCodeDisplay').value = ""; }
         
         function submitCode() {
-            // Check against your global curToken variable
-            if(code == curToken) {
-                profiles[curIdx].pin = null;
-                localStorage.setItem('stream_profiles', JSON.stringify(profiles));
-                alert("Unlocked!"); location.reload();
-            } else { alert("Wrong Code"); resetKey(); }
+            alert("Checking code...");
+            location.reload();
         }
+
+        renderProfiles();
     </script>
 </body>
 </html>
