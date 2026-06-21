@@ -10,6 +10,79 @@
         /* Add your button/input styling here */
     </style>
 </head>
+    :root {
+    --bg: #0f1014;
+    --card: #181a1f;
+    --accent: #efa11b;
+    --text: #ffffff;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.box {
+    background-color: var(--card);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    width: 320px;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background: #252830;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.main-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent);
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.profile-btn {
+    background: #252830;
+    color: white;
+    border: 2px solid transparent;
+    padding: 15px 30px;
+    margin: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.profile-btn:hover {
+    border-color: var(--accent);
+}
+
+.logout-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
 <body>
     <div id="app">
         <div id="loginScreen" class="box">
