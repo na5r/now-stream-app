@@ -58,12 +58,25 @@
             playSfx('clickSfx');
             const email = document.getElementById('email').value;
             const pass = document.getElementById('pass').value;
+            
             try {
                 await signInWithEmailAndPassword(auth, email, pass);
                 playSfx('successSfx');
-                alert("Login Successful!");
+                
+                // This removes the pop-up and switches the view
+                showDashboard();
             } catch (e) {
-                alert("Invalid Credentials");
+                // Instead of alert, you could show a small red text message on screen
+                console.error("Login failed:", e.message);
+                alert("Invalid Credentials"); // You can replace this with a better UI later
+            }
+        };
+
+        // Add this function so the transition actually happens
+        function showDashboard() {
+            document.getElementById('loginContainer').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            renderView('dashboard'); // This triggers your fetch call
             }
         };
     </script>
