@@ -1,7 +1,7 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { initLogin } from "./login.js"; // Import your new login function
 
 const firebaseConfig = { apiKey: "AIzaSyAdSeTJht66G67mMQq5oRyW0YVVffoQKWM",
   authDomain: "kaistreams.firebaseapp.com",
@@ -15,13 +15,14 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Logic to switch screens
+// Initialize Login logic
+initLogin();
+
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // User is logged in, show Profile Screen logic
-        console.log("Logged in!");
+        document.getElementById('loginScreen').classList.add('hidden');
+        console.log("User is logged in, show profiles!");
     } else {
-        // User is logged out, show Login Screen logic
-        console.log("Logged out!");
+        document.getElementById('loginScreen').classList.remove('hidden');
     }
 });
