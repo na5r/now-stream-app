@@ -11,24 +11,28 @@
         input { width: 100%; padding: 12px; margin: 10px 0; background: #252830; border: 1px solid #333; color: white; border-radius: 6px; box-sizing: border-box; }
         .main-btn { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .profile-btn { background: #252830; color: white; border: 1px solid #444; padding: 15px 30px; margin: 10px; border-radius: 8px; cursor: pointer; }
-        .logout-btn { background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+        .logout-btn { background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
+
     <div id="loginScreen" class="box">
         <h1>KaiStreams</h1>
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="pass" placeholder="Password">
         <button class="main-btn" id="loginBtn">Sign In</button>
     </div>
-    <div id="profileScreen" class="hidden" class="box">
+
+    <div id="profileScreen" class="hidden box">
         <h1>Who is watching?</h1>
         <div id="profileGrid"></div>
     </div>
-    <div id="dashboard" class="hidden" class="box">
+
+    <div id="dashboard" class="hidden box">
         <h1>Dashboard</h1>
         <button class="logout-btn" id="logoutBtn">Log Out</button>
     </div>
+
     <script type="module" src="main.js"></script>
 </body>
 </html>
