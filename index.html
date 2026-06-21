@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NOW Stream Premium</title>
     <style>
-        :root { --accent: #efa11b; }
-        body { background: #111317; color: #fff; font-family: sans-serif; }
+        body { background: #111317; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 999; justify-content: center; align-items: center; }
-        .modal-content { background: #1c1f26; padding: 30px; border-radius: 12px; width: 400px; text-align: center; }
+        .modal-content { background: #1c1f26; padding: 30px; border-radius: 12px; width: 350px; text-align: center; }
         .action-btn { background: #222731; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; font-size: 1.2rem; width: 100%; margin-top: 10px; }
         .input-field { width: 100%; padding: 10px; margin: 10px 0; background: #222731; border: 1px solid #444; color: white; border-radius: 4px; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
@@ -16,49 +15,82 @@
 </head>
 <body>
 
-    <div id="profileOverlay" style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <div id="profileGrid" style="display:flex; gap:30px;"></div>
-        <button class="action-btn" style="width:200px; margin-top:50px;" onclick="document.getElementById('creatorModal').style.display='flex'">+ Add Profile</button>
+    <div id="profileGrid" style="display:flex; gap:30px; flex-wrap:wrap; justify-content:center;"></div>
+    <button class="action-btn" style="width:200px; margin-top:50px;" onclick="document.getElementById('creatorModal').style.display='flex'">+ Add Profile</button>
+
+    <!-- CREATE PROFILE MODAL -->
+    <div class="modal" id="creatorModal">
+        <div class="modal-content">
+            <h3>Create Profile</h3>
+            <input type="text" id="newProfileName" class="input-field" placeholder="Name">
+            <input type="password" id="newProfilePin" class="input-field" placeholder="4-Digit PIN (Optional)">
+            <button class="action-btn" onclick="saveNewProfile()">Save Profile</button>
+        </div>
     </div>
 
-    <div class="modal" id="creatorModal" style="display:flex;">
+    <!-- PIN KEYPAD MODAL -->
+    <div class="modal" id="pinModal">
         <div class="modal-content">
-            <h3>Create New Profile</h3>
-            <input type="text" id="newProfileName" class="input-field" placeholder="Name">
-            <input type="password" id="newProfilePin" class="input-field" placeholder="Set 4-Digit PIN">
-            <button class="action-btn" onclick="saveNewProfile()">Save Profile</button>
+            <h3>Enter PIN</h3>
+            <input type="text" id="pinDisplay" readonly class="input-field" style="text-align:center; font-size:1.5rem;">
+            <div class="keypad" id="keypad"></div>
         </div>
     </div>
 
     <script>
         let profiles = JSON.parse(localStorage.getItem('stream_profiles')) || [];
+        let activeIdx = null;
 
         function saveNewProfile() {
             const name = document.getElementById('newProfileName').value;
             const pin = document.getElementById('newProfilePin').value;
-            if(!name) return alert("Name is required");
-            
-            profiles.push({ 
-                name: name, 
-                pin: pin, 
-                avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + name 
-            });
+            if(!name) return alert("Enter a name");
+            profiles.push({ name, pin: pin || null, avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + name });
             localStorage.setItem('stream_profiles', JSON.stringify(profiles));
-            document.getElementById('creatorModal').style.display = 'none';
-            renderProfiles();
+            location.reload();
         }
 
-        function renderProfiles() {
+        function deleteProfile(i) {
+            profiles.splice(i, 1);
+            localStorage.setItem('stream_profiles', JSON.stringify(profiles));
+            location.reload();
+        }
+
+        function render() {
             const grid = document.getElementById('profileGrid');
             grid.innerHTML = profiles.map((p, i) => `
-                <div class="profile-card" onclick="alert('Profile: ' + profiles[${i}].name)">
-                    <img src="${p.avatar}" style="width:120px; border-radius:50%;">
-                    <p>${p.name}</p>
+                <div style="text-align:center;">
+                    <div onclick="checkPin(${i})" style="cursor:pointer;">
+                        <img src="${p.avatar}" style="width:120px; border-radius:50%;">
+                        <p>${p.name}</p>
+                    </div>
+                    <button onclick="deleteProfile(${i})" style="background:none; border:none; color:red; cursor:pointer; font-size:0.8rem;">Delete</button>
                 </div>
             `).join('');
         }
+
+        // PIN Keypad Logic
+        const keypad = document.getElementById('keypad');
+        for(let i=1; i<=9; i++) keypad.innerHTML += `<button class="action-btn" onclick="inputPin('${i}')">${i}</button>`;
+        keypad.innerHTML += `<button class="action-btn" onclick="inputPin('0')">0</button>`;
+        keypad.innerHTML += `<button class="action-btn" style="background:#ff4a4a;" onclick="pinInput=''">C</button>`;
+        keypad.innerHTML += `<button class="action-btn" style="background:#00b2bd;" onclick="verifyPin()">OK</button>`;
+
+        let pinInput = "";
+        function inputPin(n) { if(pinInput.length < 4) pinInput += n; document.getElementById('pinDisplay').value = pinInput; }
         
-        renderProfiles();
+        function checkPin(i) {
+            activeIdx = i;
+            if(profiles[i].pin) { document.getElementById('pinModal').style.display = 'flex'; }
+            else { alert("Welcome " + profiles[i].name); }
+        }
+
+        function verifyPin() {
+            if(pinInput === profiles[activeIdx].pin) { alert("Unlocked!"); location.reload(); }
+            else { alert("Wrong PIN"); pinInput = ""; document.getElementById('pinDisplay').value = ""; }
+        }
+
+        render();
     </script>
 </body>
 </html>
