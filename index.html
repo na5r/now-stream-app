@@ -5,12 +5,15 @@
     <title>KaiStreams</title>
     <style>
         :root { --accent: #efa11b; --bg: #0f1014; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .hidden { display: none !important; }
-        .screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .profile-grid { display: flex; gap: 20px; }
-        .profile-btn { padding: 20px; background: #2c313c; border: none; color: white; cursor: pointer; border-radius: 10px; }
-        .delete-btn { font-size: 0.7rem; color: #ff4444; cursor: pointer; background: none; border: none; display: block; margin-top: 10px; }
+        .screen { width: 100%; max-width: 400px; text-align: center; }
+        .box { background: #1c1f26; padding: 40px; border-radius: 20px; }
+        .input-field { width: 100%; height: 50px; margin-bottom: 15px; background: #0f1217; border: 1px solid #444; color: white; border-radius: 8px; padding: 10px; box-sizing: border-box; }
+        .main-btn { width: 100%; padding: 15px; background: var(--accent); border: none; border-radius: 8px; cursor: pointer; color: black; font-weight: bold; }
+        .profile-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .profile-btn { padding: 20px; background: #2c313c; border: none; color: white; cursor: pointer; border-radius: 10px; font-size: 1.2rem; }
+        .delete-btn { color: #ff4444; cursor: pointer; background: none; border: none; margin-top: 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -42,42 +45,56 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        const app = initializeApp({ /* YOUR CONFIG HERE */ });
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdSeTJht66G67mMQq5oRyW0YVVffoQKWM",
+            authDomain: "kaistreams.firebaseapp.com",
+            projectId: "kaistreams",
+            storageBucket: "kaistreams.firebasestorage.app",
+            messagingSenderId: "232696634492",
+            appId: "1:232696634492:web:de0122ecc33ebe71237df9"
+        };
+
+        const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Fetch and display profiles
+        window.handleLogin = async () => {
+            try {
+                await signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value);
+            } catch (e) { alert("Login failed: " + e.message); }
+        };
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 document.getElementById('loginScreen').classList.add('hidden');
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                const profiles = userDoc.data().profiles;
-                const grid = document.getElementById('profileGrid');
-                grid.innerHTML = '';
-                profiles.forEach(p => {
-                    grid.innerHTML += `
-                        <div style="text-align:center">
-                            <button class="profile-btn" onclick="selectProfile('${p.name}')">${p.name}</button>
-                            <button class="delete-btn" onclick="attemptDelete('${p.name}', '${p.pin}')">Delete</button>
-                        </div>`;
-                });
-                document.getElementById('profileScreen').classList.remove('hidden');
+                try {
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    if (userDoc.exists()) {
+                        const profiles = userDoc.data().profiles;
+                        const grid = document.getElementById('profileGrid');
+                        grid.innerHTML = '';
+                        profiles.forEach(p => {
+                            grid.innerHTML += `
+                                <div style="text-align:center">
+                                    <button class="profile-btn" onclick="selectProfile('${p.name}')">${p.name}</button>
+                                    <button class="delete-btn" onclick="attemptDelete('${p.name}', '${p.pin}')">Delete</button>
+                                </div>`;
+                        });
+                        document.getElementById('profileScreen').classList.remove('hidden');
+                    }
+                } catch (e) { console.error(e); }
             }
         });
-
-        window.attemptDelete = (name, pin) => {
-            const inputPin = prompt("Enter Admin Code to delete " + name + ":");
-            if (inputPin === pin) {
-                alert("Logic to delete " + name + " goes here!"); 
-                // We will implement the actual Firebase 'arrayRemove' next
-            } else {
-                alert("Incorrect PIN!");
-            }
-        };
 
         window.selectProfile = (name) => {
             document.getElementById('profileScreen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
+        };
+
+        window.attemptDelete = (name, pin) => {
+            const input = prompt("Enter Admin Code to delete " + name + ":");
+            if(input === pin) alert("Pin correct! Implement delete logic next.");
+            else alert("Wrong PIN.");
         };
     </script>
 </body>
