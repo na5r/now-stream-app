@@ -7,15 +7,26 @@
         body { background: #0f1014; color: white; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .hidden { display: none !important; }
         .box { background: #1c1f26; padding: 40px; border-radius: 15px; width: 320px; text-align: center; }
+        /* Add your button/input styling here */
     </style>
 </head>
 <body>
     <div id="app">
-        <div id="loginScreen" class="box">...</div>
-        <div id="profileScreen" class="hidden">...</div>
-        <div id="dashboard" class="hidden">...</div>
+        <div id="loginScreen" class="box">
+            <h1>KaiStreams</h1>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="pass" placeholder="Password">
+            <button class="main-btn">Sign In</button>
+        </div>
+        <div id="profileScreen" class="hidden">
+            <h1>Who is watching?</h1>
+            <div id="profileGrid"></div>
+        </div>
+        <div id="dashboard" class="hidden">
+            <h1>Dashboard</h1>
+            <button class="logout-btn">Log Out</button>
+        </div>
     </div>
-
     <script type="module" src="main.js"></script>
 </body>
 </html>
