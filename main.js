@@ -17,7 +17,6 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 
 initLogin();
-
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         document.getElementById('loginScreen').classList.add('hidden');
