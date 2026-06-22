@@ -6,7 +6,9 @@
     <style>
         body { margin: 0; background: #000; color: white; font-family: sans-serif; overflow-x: hidden; }
         .hidden { display: none !important; }
-        .box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        
+        /* The centered layout class */
+        .box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100%; }
         
         /* Nav Menu */
         #sideNav { position: fixed; left: -250px; top: 0; width: 250px; height: 100%; background: #111; transition: 0.3s; padding-top: 50px; z-index: 100; }
@@ -17,11 +19,13 @@
         #searchBox { padding: 20px 40px; }
         input { padding: 10px; width: 300px; background: #333; border: none; color: white; border-radius: 5px; }
 
-        /* Existing Styles */
+        /* Profile Styles */
         .profile-card { width: 160px; cursor: pointer; transition: all 0.3s; text-align: center; padding: 20px; border-radius: 12px; }
         .profile-card:hover { background: linear-gradient(180deg, #333 0%, #000 100%); transform: scale(1.1); }
         .avatar { width: 140px; height: 140px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; margin-bottom: 10px; }
         .profile-card:hover .avatar { border-color: #fff; }
+        
+        /* Home Screen */
         .rail { display: flex; gap: 20px; overflow-x: auto; padding: 20px 40px; }
         .rail::-webkit-scrollbar { display: none; }
         .movie-tile { width: 200px; height: 300px; border-radius: 8px; flex-shrink: 0; border: 3px solid transparent; transition: transform 0.2s; }
@@ -36,16 +40,16 @@
         <button id="loginBtn">Sign In</button>
     </div>
 
+    <!-- Added the 'box' class back here to center the profiles -->
     <div id="profileScreen" class="hidden box">
         <h1>Who is watching?</h1>
-        <div id="profileGrid" style="display: flex; gap: 40px; margin-top: 50px;"></div>
+        <div id="profileGrid" style="display: flex; gap: 40px; margin-top: 20px;"></div>
     </div>
 
     <div id="homeScreen" class="hidden">
         <div id="sideNav">
             <div onclick="document.getElementById('sideNav').classList.remove('open')">Close Menu</div>
-            <div>Home</div>
-            <div>Movies</div>
+            <div onclick="document.getElementById('sideNav').classList.remove('open')">Home</div>
         </div>
         <div id="searchBox">
             <input type="text" id="searchInput" placeholder="Search movies...">
