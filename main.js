@@ -3,7 +3,6 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 import { initLogin } from "./login.js";
 import { loadProfiles } from "./profiles.js";
-import { initDashboard } from "./dashboard.js";
 
 const firebaseConfig = { apiKey: "AIzaSyAdSeTJht66G67mMQq5oRyW0YVVffoQKWM",
   authDomain: "kaistreams.firebaseapp.com",
@@ -17,27 +16,12 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Initialize all modules
 initLogin();
-initDashboard();
 
 onAuthStateChanged(auth, async (user) => {
-    const screens = {
-        login: document.getElementById('loginScreen'),
-        profiles: document.getElementById('profileScreen'),
-        dash: document.getElementById('dashboard')
-    };
-
     if (user) {
-        screens.login.classList.add('hidden');
-        screens.profiles.classList.remove('hidden');
-        await loadProfiles(user.uid, () => {
-            screens.profiles.classList.add('hidden');
-            screens.dash.classList.remove('hidden');
-        });
-    } else {
-        screens.login.classList.remove('hidden');
-        screens.profiles.classList.add('hidden');
-        screens.dash.classList.add('hidden');
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('profileScreen').classList.remove('hidden');
+        await loadProfiles(user.uid);
     }
 });
