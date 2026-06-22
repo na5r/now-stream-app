@@ -4,49 +4,27 @@
     <meta charset="UTF-8">
     <title>KaiStreams</title>
     <style>
-        body { margin: 0; background: #000; color: white; font-family: sans-serif; overflow-x: hidden; }
-        .hidden { display: none !important; }
-        .box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; width: 100%; }
-        
-        /* Header & Search UI */
-        header { padding: 20px 40px; display: flex; align-items: center; gap: 20px; background: #000; }
-        #searchContainer { position: relative; display: flex; align-items: center; }
-        #magnifyingGlass { font-size: 24px; cursor: pointer; }
-        #searchInput { 
-            padding: 10px; width: 0; opacity: 0; transition: 0.3s; background: #333; 
-            border: none; color: white; border-radius: 5px; margin-left: 10px;
-        }
-        #searchInput.expanded { width: 300px; opacity: 1; }
-
-        /* Rail Styles */
-        .rail { display: flex; gap: 20px; overflow-x: auto; padding: 20px 40px; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; }
+        #sidebar { position: fixed; left: -250px; top: 0; width: 250px; height: 100%; background: #1a1a1a; transition: 0.3s; padding-top: 50px; z-index: 1000; }
+        #sidebar.open { left: 0; }
+        .menu-item { padding: 20px; cursor: pointer; transition: 0.2s; font-size: 20px; }
+        .menu-item:focus { background: #e50914; outline: none; }
+        #app { padding: 20px; transition: 0.3s; }
+        .rail { display: flex; gap: 20px; padding: 20px 0; overflow-x: auto; }
         .rail::-webkit-scrollbar { display: none; }
-        .movie-tile { width: 200px; height: 300px; border-radius: 8px; flex-shrink: 0; border: 3px solid transparent; transition: transform 0.2s; cursor: pointer; }
-        .movie-tile:focus { transform: scale(1.1); border-color: white; outline: none; }
+        .movie-tile { width: 200px; height: 300px; background: #333; border: 4px solid transparent; transition: 0.2s; flex-shrink: 0; cursor: pointer; }
+        .movie-tile:focus { transform: scale(1.1); border-color: white; }
     </style>
 </head>
 <body>
-    <div id="loginScreen" class="box">
-        <h1>KaiStreams</h1>
-        <input type="email" id="email" placeholder="Email"><br>
-        <input type="password" id="pass" placeholder="Password"><br>
-        <button id="loginBtn">Sign In</button>
+    <div id="sidebar">
+        <div class="menu-item" tabindex="0" onclick="window.location.reload()">Home</div>
+        <div class="menu-item" tabindex="0" id="filterMovies">Movies</div>
+        <div class="menu-item" tabindex="0" id="filterSeries">Series</div>
     </div>
-
-    <div id="profileScreen" class="hidden box">
-        <h1>Who is watching?</h1>
-        <div id="profileGrid" style="display: flex; gap: 40px; margin-top: 20px;"></div>
-    </div>
-
-    <div id="homeScreen" class="hidden">
-        <header>
-            <h2 style="margin:0;">KaiStreams</h2>
-            <div id="searchContainer">
-                <span id="magnifyingGlass">🔍</span>
-                <input type="text" id="searchInput" placeholder="Search...">
-            </div>
-        </header>
-        <div id="railsContainer"></div>
+    <div id="app">
+        <header><h1>KaiStreams</h1></header>
+        <div id="container"></div>
     </div>
     <script type="module" src="main.js"></script>
 </body>
