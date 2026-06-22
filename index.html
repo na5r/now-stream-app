@@ -4,24 +4,22 @@
     <meta charset="UTF-8">
     <title>KaiStreams</title>
     <style>
-        body { 
-            margin: 0; 
-            background: radial-gradient(circle at 50% 30%, #3d2d0b 0%, #000000 70%); 
-            color: white; 
-            font-family: 'Segoe UI', sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            overflow: hidden;
-        }
+        body { margin: 0; background: #000; color: white; font-family: sans-serif; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
-        .box { text-align: center; }
-        #profileGrid { display: flex; gap: 40px; margin-top: 50px; }
-        .profile-container { transition: transform 0.2s; cursor: pointer; }
-        .profile-circle { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; }
-        .profile-container:hover { transform: scale(1.1); }
-        .profile-container:hover .profile-circle { border-color: white; }
+        .box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        
+        /* Home Screen Styles */
+        #homeScreen { padding: 20px; }
+        .hero { height: 400px; background: #333; display: flex; align-items: flex-end; padding: 40px; margin-bottom: 30px; }
+        .row { margin-bottom: 40px; }
+        .row-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+        .rail { display: flex; gap: 20px; overflow-x: auto; padding: 10px; }
+        .rail::-webkit-scrollbar { display: none; }
+        .movie-tile { 
+            width: 250px; height: 140px; border-radius: 8px; flex-shrink: 0; 
+            border: 3px solid transparent; transition: transform 0.2s, border 0.2s; cursor: pointer;
+        }
+        .movie-tile:focus { transform: scale(1.1); border-color: white; outline: none; }
     </style>
 </head>
 <body>
@@ -31,10 +29,17 @@
         <input type="password" id="pass" placeholder="Password"><br>
         <button id="loginBtn">Sign In</button>
     </div>
+
     <div id="profileScreen" class="hidden box">
         <h1>Who is watching?</h1>
-        <div id="profileGrid"></div>
+        <div id="profileGrid" style="display: flex; gap: 40px; margin-top: 50px;"></div>
     </div>
+
+    <div id="homeScreen" class="hidden">
+        <div class="hero"><h1>Featured Content</h1></div>
+        <div id="railsContainer"></div>
+    </div>
+
     <script type="module" src="main.js"></script>
 </body>
 </html>
