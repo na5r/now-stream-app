@@ -1,19 +1,45 @@
-<style>
-    body { margin: 0; background: #000; color: white; font-family: sans-serif; }
-    .hidden { display: none !important; }
-    .box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KaiStreams</title>
+    <style>
+        body { margin: 0; background: #000; color: white; font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        .hidden { display: none !important; }
+        .box { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        
+        /* Profile Gradient Effect */
+        .profile-card { width: 160px; cursor: pointer; transition: all 0.3s ease; text-align: center; padding: 20px; border-radius: 12px; }
+        .profile-card:hover { background: linear-gradient(180deg, #333 0%, #000 100%); transform: scale(1.1); }
+        .avatar { width: 140px; height: 140px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; margin-bottom: 10px; }
+        .profile-card:hover .avatar { border-color: #fff; }
 
-    /* Profile Gradient Effect */
-    .profile-card { 
-        width: 150px; cursor: pointer; transition: transform 0.3s;
-        text-align: center; padding: 10px; border-radius: 10px;
-    }
-    .profile-card:hover { transform: scale(1.1); background: linear-gradient(180deg, #333 0%, #000 100%); }
-    .avatar { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; }
-    .profile-card:hover .avatar { border-color: #fff; }
+        /* Home Screen */
+        .hero { height: 400px; background: #333; display: flex; align-items: flex-end; padding: 40px; margin-bottom: 30px; }
+        .rail { display: flex; gap: 20px; overflow-x: auto; padding: 20px 40px; }
+        .rail::-webkit-scrollbar { display: none; }
+        .movie-tile { width: 200px; height: 300px; border-radius: 8px; flex-shrink: 0; border: 3px solid transparent; transition: transform 0.2s; }
+        .movie-tile:focus { transform: scale(1.1); border-color: white; outline: none; }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="box">
+        <h1>KaiStreams</h1>
+        <input type="email" id="email" placeholder="Email"><br>
+        <input type="password" id="pass" placeholder="Password"><br>
+        <button id="loginBtn">Sign In</button>
+    </div>
 
-    /* Home Screen */
-    .rail { display: flex; gap: 20px; overflow-x: auto; padding: 20px; }
-    .movie-tile { width: 200px; height: 300px; border-radius: 8px; flex-shrink: 0; border: 3px solid transparent; transition: transform 0.2s; }
-    .movie-tile:focus { transform: scale(1.1); border-color: white; outline: none; }
-</style>
+    <div id="profileScreen" class="hidden box">
+        <h1>Who is watching?</h1>
+        <div id="profileGrid" style="display: flex; gap: 40px; margin-top: 50px;"></div>
+    </div>
+
+    <div id="homeScreen" class="hidden">
+        <div class="hero"><h1>Featured Content</h1></div>
+        <div id="railsContainer"></div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
