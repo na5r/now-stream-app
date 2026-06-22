@@ -1,5 +1,6 @@
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 import { db } from "./main.js";
+import { renderHomeScreen } from "./home.js";
 
 export async function loadProfiles(uid) {
     const snap = await getDoc(doc(db, "users", uid));
@@ -10,13 +11,14 @@ export async function loadProfiles(uid) {
         snap.data().profiles.forEach(p => {
             const div = document.createElement('div');
             div.className = 'profile-container';
-            div.innerHTML = `
-                <div class="profile-circle"><img src="${p.avatar}" style="width:100%; height:100%; object-fit:cover;"></div>
-                <p>${p.name}</p>
-            `;
+            div.style.cursor = 'pointer';
+            div.innerHTML = `<div style="width:150px;height:150px;border-radius:50%;overflow:hidden;"><img src="${p.avatar}" style="width:100%;height:100%;object-fit:cover;"></div><p style="text-align:center;">${p.name}</p>`;
+            div.onclick = () => {
+                document.getElementById('profileScreen').classList.add('hidden');
+                document.getElementById('homeScreen').classList.remove('hidden');
+                renderHomeScreen();
+            };
             grid.appendChild(div);
         });
-        // Add "New Profile" button
-        grid.innerHTML += `<div class="profile-container"><div class="profile-circle" style="background:#333; display:flex; align-items:center; justify-content:center; font-size:50px;">+</div><p>New Profile</p></div>`;
     }
 }
