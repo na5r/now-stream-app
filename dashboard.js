@@ -1,16 +1,13 @@
-
-import { signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-import { auth } from "./main.js";
-
-export function initDashboard() {
-    const logoutBtn = document.querySelector(".logout-btn");
-    
-    logoutBtn.addEventListener("click", async () => {
-        try {
-            await signOut(auth);
-            location.reload(); // Simple, clean way to reset everything
-        } catch (e) {
-            console.error("Logout failed:", e);
-        }
+export function renderHome() {
+    const container = document.getElementById('container');
+    const cats = ['Trending', 'Recommended', 'Coming Soon'];
+    cats.forEach(c => {
+        container.innerHTML += `<h3>${c}</h3><div class="rail"></div>`;
+    });
+    // Navigation Sounds
+    const click = new Audio('click.mp3');
+    window.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') click.play();
+        if(e.key === 'ArrowLeft') document.getElementById('sidebar').classList.add('open');
     });
 }
