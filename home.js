@@ -16,10 +16,17 @@ export async function renderHomeScreen() {
     const container = document.getElementById('railsContainer');
     container.innerHTML = '';
     
-    document.getElementById('searchInput').onkeypress = async (e) => {
+    // Search toggle
+    const input = document.getElementById('searchInput');
+    document.getElementById('magnifyingGlass').onclick = () => input.classList.add('expanded');
+
+    input.onkeydown = async (e) => {
         if (e.key === 'Enter') {
-            const results = await fetchMovies(e.target.value, true);
+            e.preventDefault(); // Stop focus from jumping
+            const results = await fetchMovies(input.value, true);
             if (results.Search) displayResults(results.Search);
+            input.classList.remove('expanded');
+            input.value = '';
         }
     };
 
@@ -35,6 +42,7 @@ export async function renderHomeScreen() {
     }
 
     window.onkeydown = (e) => {
+        if (input === document.activeElement) return; // Ignore arrows if typing in search
         const tiles = document.querySelectorAll('.movie-tile');
         if (e.key === 'ArrowRight' && selectedIndex < tiles.length - 1) selectedIndex++;
         if (e.key === 'ArrowLeft' && selectedIndex > 0) selectedIndex--;
@@ -55,7 +63,7 @@ function createTile(data, rail) {
     tile.className = 'movie-tile';
     tile.tabIndex = "0";
     tile.innerHTML = `<img src="${data.Poster}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">`;
-    tile.onclick = () => alert("You clicked: " + data.Title);
+    tile.onclick = () => alert("Selected: " + data.Title);
     tile.onfocus = () => tile.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     rail.appendChild(tile);
 }
