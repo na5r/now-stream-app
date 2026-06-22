@@ -3,8 +3,9 @@ import { auth } from "./main.js";
 
 export function initLogin() {
     document.getElementById("loginBtn").onclick = async () => {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('pass').value;
         try { await signInWithEmailAndPassword(auth, e, p); } 
-        catch (err) { alert("Login failed"); }
+        catch (err) { alert("Login failed: " + err.message); }
     };
 }
