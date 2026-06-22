@@ -4,35 +4,37 @@
     <meta charset="UTF-8">
     <title>KaiStreams</title>
     <style>
-        :root { --bg: #0f1014; --card: #1c1f26; --accent: #efa11b; --text: #ffffff; }
-        body { background-color: var(--bg); color: var(--text); font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { 
+            margin: 0; 
+            background: radial-gradient(circle at 50% 30%, #3d2d0b 0%, #000000 70%); 
+            color: white; 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden;
+        }
         .hidden { display: none !important; }
-        .box { background-color: var(--card); padding: 40px; border-radius: 15px; width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #252830; border: 1px solid #333; color: white; border-radius: 6px; box-sizing: border-box; }
-        .main-btn { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .profile-btn { background: #252830; color: white; border: 1px solid #444; padding: 15px 30px; margin: 10px; border-radius: 8px; cursor: pointer; }
-        .logout-btn { background: #ff4444; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-top: 20px; }
+        .box { text-align: center; }
+        #profileGrid { display: flex; gap: 40px; margin-top: 50px; }
+        .profile-container { transition: transform 0.2s; cursor: pointer; }
+        .profile-circle { width: 150px; height: 150px; border-radius: 50%; overflow: hidden; border: 3px solid transparent; }
+        .profile-container:hover { transform: scale(1.1); }
+        .profile-container:hover .profile-circle { border-color: white; }
     </style>
 </head>
 <body>
-
     <div id="loginScreen" class="box">
         <h1>KaiStreams</h1>
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="pass" placeholder="Password">
-        <button class="main-btn" id="loginBtn">Sign In</button>
+        <input type="email" id="email" placeholder="Email"><br>
+        <input type="password" id="pass" placeholder="Password"><br>
+        <button id="loginBtn">Sign In</button>
     </div>
-
     <div id="profileScreen" class="hidden box">
         <h1>Who is watching?</h1>
         <div id="profileGrid"></div>
     </div>
-
-    <div id="dashboard" class="hidden box">
-        <h1>Dashboard</h1>
-        <button class="logout-btn" id="logoutBtn">Log Out</button>
-    </div>
-
     <script type="module" src="main.js"></script>
 </body>
 </html>
